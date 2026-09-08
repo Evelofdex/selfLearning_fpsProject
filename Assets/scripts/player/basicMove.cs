@@ -45,7 +45,7 @@ public class basicMove : MonoBehaviour
             isGrounded = false;
         }
         //dash
-        if (Input.GetKeyDown(KeyCode.LeftShift) && isCooldown_dash)
+        if (Input.GetKeyDown(KeyCode.LeftShift) && !isCooldown_dash)
         {
             t_dash += Time.deltaTime/1f;
             dash = Mathf.SmoothStep(1f, dashEnd, t_dash);
@@ -75,6 +75,8 @@ public class basicMove : MonoBehaviour
 
     IEnumerator dashCooldown()
     {
-        
+        isCooldown_dash = true;
+        yield return new WaitForSeconds(3f);
+        isCooldown_dash = false;
     }
 }
