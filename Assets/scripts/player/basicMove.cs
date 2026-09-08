@@ -9,7 +9,7 @@ public class basicMove : MonoBehaviour
     [SerializeField] private float spd;
 
     //skills
-    private float jumpForce;
+    [SerializeField] private float jumpForce;
     private bool isGrounded;
 
     private float dashEnd;
@@ -20,9 +20,10 @@ public class basicMove : MonoBehaviour
     void Start()
     {
         rb = GetComponent<Rigidbody>();
+        rb.mass = 5f;
         spd = 10f;
         jumpForce = 10f;
-        dashEnd = 3f;
+        dashEnd = 2f;
         dash = 0f;
         isCooldown_dash = false;
         isGrounded = true;
@@ -48,8 +49,10 @@ public class basicMove : MonoBehaviour
         if (Input.GetKeyDown(KeyCode.LeftShift) && !isCooldown_dash)
         {
             t_dash += Time.deltaTime/1f;
-            dash = Mathf.SmoothStep(1f, dashEnd, t_dash);
-            if (dash >= dashEnd)
+            dash = Mathf.SmoothStep(dashEnd, 0f, t_dash);
+            Debug.Log("is Dashing: " + dash);
+            StartCoroutine(dashCooldown());
+            if (dash <= dashEnd)
             {
                 dash = 0f;
                 StartCoroutine(dashCooldown());
@@ -65,6 +68,7 @@ public class basicMove : MonoBehaviour
     {
         if (collision.gameObject.CompareTag("Ground")) 
         isGrounded = true;
+        Debug.Log("grounded");
     }
     
     void OnCollisionExit(Collision collision)
@@ -76,6 +80,7 @@ public class basicMove : MonoBehaviour
     IEnumerator dashCooldown()
     {
         isCooldown_dash = true;
+        Debug.Log("stopped dashing");
         yield return new WaitForSeconds(3f);
         isCooldown_dash = false;
     }
