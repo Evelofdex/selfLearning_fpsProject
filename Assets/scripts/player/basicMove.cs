@@ -1,35 +1,33 @@
 using System.Collections;
 using System.Collections.Generic;
-using System.Runtime.CompilerServices;
+using TMPro.SpriteAssetUtilities;
 using UnityEngine;
 
 public class basicMove : MonoBehaviour
 {
     private Rigidbody rb;
-    [SerializeField] private float spd;
+    [SerializeField] private float spd = 3f;
+    [SerializeField] private float jumpForce = 10f;
 
-    //skills
-    [SerializeField] private float jumpForce;
+    //jump mechanic
     private bool isGrounded;
+    [SerializeField] private float fallMultiplier;
+    //dash mechanic
+    [SerializeField] private float dashSpd = 10f;
+    private float dashCooldownTime = 2f;
+    private bool isCooldown_dash = false;
 
-    private float dashEnd;
-    private float dash;
-    private bool isCooldown_dash;
 
-    // Start is called before the first frame update
     void Start()
     {
         rb = GetComponent<Rigidbody>();
-        rb.mass = 5f;
-        spd = 10f;
+        //jump mechanic
         jumpForce = 10f;
-        dashEnd = 2f;
-        dash = 0f;
-        isCooldown_dash = false;
         isGrounded = true;
-    }
+        fallMultiplier = 2f;
+    }   
+    
 
-    private float t_dash;
     void FixedUpdate()
     {
         Vector3 direction = Vector3.zero;
@@ -39,49 +37,55 @@ public class basicMove : MonoBehaviour
         if(Input.GetKey(KeyCode.A)) direction += Vector3.left;
         if(Input.GetKey(KeyCode.D)) direction += Vector3.right;
 
-        //jump
-        if (Input.GetKeyDown(KeyCode.Space) && isGrounded)
-        {
-            rb.AddForce(Vector3.up * jumpForce, ForceMode.Impulse);
-            isGrounded = false;
-        }
-        //dash
+        if (direction != Vector3.zero) direction = direction.normalized;
+        
+        rb.velocity = new Vector3(direction.x * spd, rb.velocity.y, direction.z * spd);
+
+    }
+
+    void Update()
+    {
+        //when jump
+        if (Input.GetKeyDown(KeyCode.Space) && isGrounded) 
+        rb.AddForce(Vector3.up * jumpForce, ForceMode.Impulse);
+        //when falling down
+        if (rb.velocity.y < 0)
+        rb.velocity += Vector3.up * Physics.gravity.y * (fallMultiplier - 1) * Time.deltaTime;
+
+        //when dash
         if (Input.GetKeyDown(KeyCode.LeftShift) && !isCooldown_dash)
         {
-            t_dash += Time.deltaTime/1f;
-            dash = Mathf.SmoothStep(dashEnd, 0f, t_dash);
-            Debug.Log("is Dashing: " + dash);
+            rb.AddForce(Vector3.forward * dashSpd, ForceMode.Impulse);
+            isCooldown_dash = true;
+            Debug.Log("dash cooldown");
             StartCoroutine(dashCooldown());
-            if (dash <= dashEnd)
-            {
-                dash = 0f;
-                StartCoroutine(dashCooldown());
-            }
         }
-
-        if(direction != Vector3.zero) direction.Normalize();
-
-        rb.velocity = direction * spd + rb.velocity * dash;
     }
+
 
     void OnCollisionEnter(Collision collision)
     {
-        if (collision.gameObject.CompareTag("Ground")) 
-        isGrounded = true;
-        Debug.Log("grounded");
+        if (collision.gameObject.CompareTag("Ground"))
+        {
+            // Debug.Log("Grounded");
+            isGrounded = true;
+        }
     }
-    
     void OnCollisionExit(Collision collision)
     {
-        if (collision.gameObject.CompareTag("Ground")) 
-        isGrounded = false;
+        if (collision.gameObject.CompareTag("Ground"))
+        {
+            // Debug.Log("Exited Ground");
+            isGrounded = false;
+        }
     }
 
+    //dash cooldown
     IEnumerator dashCooldown()
     {
-        isCooldown_dash = true;
-        Debug.Log("stopped dashing");
-        yield return new WaitForSeconds(3f);
+        yield return new WaitForSeconds(dashCooldownTime);
         isCooldown_dash = false;
+        Debug.Log("dash cooldown ended");
     }
+
 }
