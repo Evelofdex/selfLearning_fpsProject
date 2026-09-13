@@ -7,7 +7,7 @@ public class basicMove : MonoBehaviour
 {
     private Rigidbody rb;
     private float spd = 3f;
-    private float jumpForce = 5f;
+    private float jumpForce = 3f;
 
     //jump mechanic
     private bool isGrounded;
@@ -18,6 +18,10 @@ public class basicMove : MonoBehaviour
     private bool isCooldown_dash = false;
     private float dashDuration = 0.2f;
     private bool isDashing;
+    //mouse rotation
+
+
+
 
 
     void Start()
@@ -26,12 +30,19 @@ public class basicMove : MonoBehaviour
         //jump mechanic
         isGrounded = true;
         fallMultiplier = 4f;
+
+        Cursor.lockState = CursorLockMode.Locked;
     }   
     
 
     void FixedUpdate()
     {
         Vector3 direction = Vector3.zero;
+
+        //player rotation
+        float mouseY = Input.GetAxis("Mouse X");
+        transform.Rotate(new Vector3(0, mouseY, 0));
+        transform.rotation = Quaternion.Euler(new Vector3(0, transform.rotation.y, 0));
 
         if(Input.GetKey(KeyCode.W)) direction += Vector3.forward;
         if(Input.GetKey(KeyCode.S)) direction += Vector3.back;
@@ -43,6 +54,8 @@ public class basicMove : MonoBehaviour
         if (!isDashing)
         rb.velocity = new Vector3(direction.x * spd, rb.velocity.y, direction.z * spd);
 
+        //exit lockstate
+        if (Input.GetKeyDown(KeyCode.Escape)) Cursor.lockState = CursorLockMode.None;
     }
 
     void Update()
