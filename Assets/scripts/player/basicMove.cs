@@ -6,8 +6,8 @@ using UnityEngine;
 public class basicMove : MonoBehaviour
 {
     private Rigidbody rb;
-    [SerializeField] private float spd = 3f;
-    [SerializeField] private float jumpForce = 10f;
+    private float spd = 3f;
+    private float jumpForce = 5f;
 
     //jump mechanic
     private bool isGrounded;
@@ -16,15 +16,16 @@ public class basicMove : MonoBehaviour
     [SerializeField] private float dashSpd = 10f;
     private float dashCooldownTime = 2f;
     private bool isCooldown_dash = false;
+    private float dashDuration = 0.2f;
+    private bool isDashing;
 
 
     void Start()
     {
         rb = GetComponent<Rigidbody>();
         //jump mechanic
-        jumpForce = 10f;
         isGrounded = true;
-        fallMultiplier = 2f;
+        fallMultiplier = 4f;
     }   
     
 
@@ -39,6 +40,7 @@ public class basicMove : MonoBehaviour
 
         if (direction != Vector3.zero) direction = direction.normalized;
         
+        if (!isDashing)
         rb.velocity = new Vector3(direction.x * spd, rb.velocity.y, direction.z * spd);
 
     }
@@ -55,9 +57,7 @@ public class basicMove : MonoBehaviour
         //when dash
         if (Input.GetKeyDown(KeyCode.LeftShift) && !isCooldown_dash)
         {
-            rb.AddForce(Vector3.forward * dashSpd, ForceMode.Impulse);
-            isCooldown_dash = true;
-            Debug.Log("dash cooldown");
+            StartCoroutine(dashing());
             StartCoroutine(dashCooldown());
         }
     }
@@ -80,6 +80,19 @@ public class basicMove : MonoBehaviour
         }
     }
 
+    //dashing
+    IEnumerator dashing()
+    {
+        isDashing = true;
+
+        rb.AddForce(Vector3.forward * dashSpd, ForceMode.Impulse);
+        rb.velocity = new Vector3(rb.velocity.x, rb.velocity.y, rb.velocity.z);
+        isCooldown_dash = true;
+        Debug.Log("dash cooldown");
+
+        yield return new WaitForSeconds(dashDuration);
+        isDashing = false;
+    }
     //dash cooldown
     IEnumerator dashCooldown()
     {
