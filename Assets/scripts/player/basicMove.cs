@@ -34,7 +34,7 @@ public class basicMove : MonoBehaviour
     {
         //game settings
         gameSettings = GameObject.FindGameObjectWithTag("gameSettings");
-        cameraSensitivity = GetComponent<basicGameplaySettings>();
+        cameraSensitivity = gameSettings.GetComponent<basicGameplaySettings>();
 
         rb = GetComponent<Rigidbody>();
         //jump mechanic
