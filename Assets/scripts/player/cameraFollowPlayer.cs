@@ -15,7 +15,6 @@ public class cameraFollowPlayer : MonoBehaviour
 
     private float offsetRotationX = 5f;
     private float playerOrbitRotate;
-// plus fix senitivity
     // Start is called before the first frame update
     void Start()
     {
