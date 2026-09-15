@@ -8,7 +8,7 @@ public class basicMove : MonoBehaviour
 {
     //ref other script
     private GameObject gameSettings;
-    private basicGameplaySettings cameraSensitivity;
+    private basicGameplaySettings camSensitivity;
 
     private Rigidbody rb;
     private float spd = 3f;
@@ -34,7 +34,7 @@ public class basicMove : MonoBehaviour
     {
         //game settings
         gameSettings = GameObject.FindGameObjectWithTag("gameSettings");
-        cameraSensitivity = gameSettings.GetComponent<basicGameplaySettings>();
+        camSensitivity = gameSettings.GetComponent<basicGameplaySettings>();
 
         rb = GetComponent<Rigidbody>();
         //jump mechanic
@@ -43,7 +43,10 @@ public class basicMove : MonoBehaviour
 
         Cursor.lockState = CursorLockMode.Locked;
 
+        //run mechanic
         runMultiplier = 1f;
+
+
     }   
     
 
@@ -51,11 +54,11 @@ public class basicMove : MonoBehaviour
     void FixedUpdate()
     {
         Vector3 direction = Vector3.zero;
-
+    
 
         //player rotation
-        float mouseY = Input.GetAxis("Mouse X");
-        rotateDirection.y += mouseY * cameraSensitivity.CameraMoveSensitivity;
+        float mouseY = Input.GetAxis("Mouse X") * camSensitivity.CameraMoveSensitivity;
+        rotateDirection.y += mouseY;
         transform.rotation = Quaternion.Euler(rotateDirection);
 
         //basic movement
