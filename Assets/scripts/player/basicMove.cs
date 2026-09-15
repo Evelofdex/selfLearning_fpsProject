@@ -2,6 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using TMPro.SpriteAssetUtilities;
 using UnityEngine;
+using UnityEngine.InputSystem;
 
 public class basicMove : MonoBehaviour
 {
@@ -18,7 +19,6 @@ public class basicMove : MonoBehaviour
     private bool isCooldown_dash = false;
     private float dashDuration = 0.2f;
     private bool isDashing;
-    //mouse rotation
 
 
 
@@ -35,19 +35,24 @@ public class basicMove : MonoBehaviour
     }   
     
 
+    Vector3 rotateDirection = Vector3.zero; 
     void FixedUpdate()
     {
         Vector3 direction = Vector3.zero;
 
+
         //player rotation
         float mouseY = Input.GetAxis("Mouse X");
-        transform.Rotate(new Vector3(0, mouseY, 0));
-        transform.rotation = Quaternion.Euler(new Vector3(0, transform.rotation.y, 0));
+        rotateDirection.y += mouseY;
+        transform.rotation = Quaternion.Euler(rotateDirection);
 
-        if(Input.GetKey(KeyCode.W)) direction += Vector3.forward;
-        if(Input.GetKey(KeyCode.S)) direction += Vector3.back;
-        if(Input.GetKey(KeyCode.A)) direction += Vector3.left;
-        if(Input.GetKey(KeyCode.D)) direction += Vector3.right;
+        //basic movement
+        if(Input.GetKey(KeyCode.W)) direction += transform.forward;
+        if(Input.GetKey(KeyCode.S)) direction += transform.forward * -1;
+        if(Input.GetKey(KeyCode.A)) direction += transform.right * -1;
+        if(Input.GetKey(KeyCode.D)) direction += transform.right;
+        //run
+        if(Input.GetKey(KeyCode.LeftShift)) 
 
         if (direction != Vector3.zero) direction = direction.normalized;
         
@@ -68,7 +73,7 @@ public class basicMove : MonoBehaviour
         rb.velocity += Vector3.up * Physics.gravity.y * (fallMultiplier - 1) * Time.deltaTime;
 
         //when dash
-        if (Input.GetKeyDown(KeyCode.LeftShift) && !isCooldown_dash)
+        if (Input.GetKeyDown(KeyCode.LeftControl) && !isCooldown_dash)
         {
             StartCoroutine(dashing());
             StartCoroutine(dashCooldown());
@@ -98,7 +103,7 @@ public class basicMove : MonoBehaviour
     {
         isDashing = true;
 
-        rb.AddForce(Vector3.forward * dashSpd, ForceMode.Impulse);
+        rb.AddForce(transform.forward * dashSpd, ForceMode.Impulse);
         rb.velocity = new Vector3(rb.velocity.x, rb.velocity.y, rb.velocity.z);
         isCooldown_dash = true;
         Debug.Log("dash cooldown");
