@@ -6,6 +6,10 @@ using UnityEngine.InputSystem;
 
 public class basicMove : MonoBehaviour
 {
+    //ref other script
+    private GameObject gameSettings;
+    private basicGameplaySettings cameraSensitivity;
+
     private Rigidbody rb;
     private float spd = 3f;
     private float jumpForce = 3f;
@@ -28,6 +32,10 @@ public class basicMove : MonoBehaviour
 
     void Start()
     {
+        //game settings
+        gameSettings = GameObject.FindGameObjectWithTag("gameSettings");
+        cameraSensitivity = GetComponent<basicGameplaySettings>();
+
         rb = GetComponent<Rigidbody>();
         //jump mechanic
         isGrounded = true;
@@ -47,7 +55,7 @@ public class basicMove : MonoBehaviour
 
         //player rotation
         float mouseY = Input.GetAxis("Mouse X");
-        rotateDirection.y += mouseY;
+        rotateDirection.y += mouseY * cameraSensitivity.CameraMoveSensitivity;
         transform.rotation = Quaternion.Euler(rotateDirection);
 
         //basic movement
