@@ -22,7 +22,7 @@ public class cameraFollowPlayer : MonoBehaviour
     {
         //game settings
         gameSettings = GameObject.FindGameObjectWithTag("gameSettings");
-        camSensitivity = GetComponent<basicGameplaySettings>();
+        camSensitivity = gameSettings.GetComponent<basicGameplaySettings>();
 
         player = GameObject.FindWithTag("Player");
         camSensitivity = GetComponent<basicGameplaySettings>();
