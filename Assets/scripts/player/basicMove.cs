@@ -19,6 +19,8 @@ public class basicMove : MonoBehaviour
     private bool isCooldown_dash = false;
     private float dashDuration = 0.2f;
     private bool isDashing;
+    //run mechanic
+    private float runMultiplier;
 
 
 
@@ -32,6 +34,8 @@ public class basicMove : MonoBehaviour
         fallMultiplier = 4f;
 
         Cursor.lockState = CursorLockMode.Locked;
+
+        runMultiplier = 1f;
     }   
     
 
@@ -52,12 +56,13 @@ public class basicMove : MonoBehaviour
         if(Input.GetKey(KeyCode.A)) direction += transform.right * -1;
         if(Input.GetKey(KeyCode.D)) direction += transform.right;
         //run
-        if(Input.GetKey(KeyCode.LeftShift)) 
+        if(Input.GetKey(KeyCode.LeftShift)) runMultiplier = 2f;
+        else runMultiplier = 1f;
 
         if (direction != Vector3.zero) direction = direction.normalized;
         
         if (!isDashing)
-        rb.velocity = new Vector3(direction.x * spd, rb.velocity.y, direction.z * spd);
+        rb.velocity = new Vector3(direction.x * (spd * runMultiplier), rb.velocity.y, direction.z * spd);
 
         //exit lockstate
         if (Input.GetKeyDown(KeyCode.Escape)) Cursor.lockState = CursorLockMode.None;
