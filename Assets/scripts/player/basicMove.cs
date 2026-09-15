@@ -120,7 +120,6 @@ public class basicMove : MonoBehaviour
         isDashing = true;
 
         rb.AddForce(transform.forward * dashSpd, ForceMode.Impulse);
-        rb.velocity = new Vector3(rb.velocity.x, rb.velocity.y, rb.velocity.z);
         isCooldown_dash = true;
         Debug.Log("dash cooldown");
 
